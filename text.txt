@@ -1,21 +1,3 @@
-sk-api-ZYYEdDZYN_HO5A1WD-5D7Fapaji5Rrpl_gth3_zwLOIKGp9uspjkWkVoTcPnrx9Z0wOVzaWxAlr4GL76hCDJLhz5W03dGboLQC6pQNsEokDQP9QnmEDk1C4
-
-  "env": {
-    "ANTHROPIC_BASE_URL": "https://api.minimax.io/anthropic",
-    "ANTHROPIC_AUTH_TOKEN":"sk-cp-W6QrS70dzZPJePKYIIpUGeWbAxIj1fBvC01sBqv2Z3f9Ro3EF6NysGw8cUF330Il9UR08azva1I_g78OLq2r6_Ph6wZQxncxbEtzr4aLYN9DCSCRbpuXiWk",
-    "API_TIMEOUT_MS": "3000000",
-    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": 1,
-    "ANTHROPIC_MODEL": "MiniMax-M2.5",
-    "ANTHROPIC_SMALL_FAST_MODEL": "MiniMax-M2.5",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "MiniMax-M2.5",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "MiniMax-M2.5",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "MiniMax-M2.5"
-  }
-
-
-
-
-
   Explore(Trace search query flow)                                                                                                                     ⎿  Done (24 tool uses · 50.5k tokens · 1m 9s)                                                                                                      
   (ctrl+o to expand)                                                                                                                                 
                                                         
