@@ -120,6 +120,8 @@ const webSearchAction: ResearchAction<typeof actionSchema> = {
         metadata: {
           title: r.title,
           url: r.url,
+          ...(r.score != null && { score: r.score }),
+          ...(r.engines && { engines: r.engines }),
         },
       }));
 

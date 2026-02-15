@@ -4,6 +4,7 @@ import SessionManager from '@/lib/session';
 import { ChatTurnMessage } from '@/lib/types';
 import { SearchSources } from '@/lib/agents/search/types';
 import APISearchAgent from '@/lib/agents/search/api';
+import { sanitizeCodeBlocks } from '@/lib/utils/codeSanitizer';
 
 interface ChatRequestBody {
   optimizationMode: 'speed' | 'balanced' | 'quality';
@@ -94,7 +95,7 @@ export const POST = async (req: Request) => {
             }
 
             if (event === 'end') {
-              resolve(Response.json({ message, sources }, { status: 200 }));
+              resolve(Response.json({ message: sanitizeCodeBlocks(message), sources }, { status: 200 }));
             }
 
             if (event === 'error') {

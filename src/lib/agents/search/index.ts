@@ -8,6 +8,7 @@ import db from '@/lib/db';
 import { chats, messages } from '@/lib/db/schema';
 import { and, eq, gt } from 'drizzle-orm';
 import { TextBlock } from '@/lib/types';
+import { sanitizeCodeBlocks } from '@/lib/utils/codeSanitizer';
 
 class SearchAgent {
   async searchAsync(session: SessionManager, input: SearchAgentInput) {
@@ -154,6 +155,7 @@ class SearchAgent {
         }
 
         block.data += chunk.contentChunk;
+        block.data = sanitizeCodeBlocks(block.data);
 
         session.updateBlock(block.id, [
           {

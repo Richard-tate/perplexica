@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:platform.minimax.io)",
+      "Bash(npx tsc:*)",
+      "WebSearch",
+      "WebFetch(domain:docs.searxng.org)"
+    ]
+  }
+}

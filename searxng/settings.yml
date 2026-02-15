@@ -12,6 +12,85 @@ search:
 server:
   secret_key: 'a2fb23f1b02e6ee83875b09826990de0f6bd908b6638e8c10277d415f6ab852b' # Is overwritten by ${SEARXNG_SECRET}
 
+# Hostname priority boosting for programming content
+hostnames:
+  high_priority:
+    # Documentation & references
+    - '(.*\.)?stackoverflow\.com$'
+    - '(.*\.)?stackexchange\.com$'
+    - '(.*\.)?github\.com$'
+    - '(.*\.)?github\.io$'
+    - '(.*\.)?developer\.mozilla\.org$'
+    - '(.*\.)?docs\.microsoft\.com$'
+    - '(.*\.)?learn\.microsoft\.com$'
+    - '(.*\.)?devdocs\.io$'
+    # Language & framework docs
+    - '(.*\.)?php\.net$'
+    - '(.*\.)?laravel\.com$'
+    - '(.*\.)?python\.org$'
+    - '(.*\.)?docs\.python\.org$'
+    - '(.*\.)?nodejs\.org$'
+    - '(.*\.)?typescriptlang\.org$'
+    - '(.*\.)?rust-lang\.org$'
+    - '(.*\.)?go\.dev$'
+    - '(.*\.)?kotlinlang\.org$'
+    - '(.*\.)?ruby-lang\.org$'
+    - '(.*\.)?docs\.oracle\.com$'
+    - '(.*\.)?react\.dev$'
+    - '(.*\.)?vuejs\.org$'
+    - '(.*\.)?angular\.dev$'
+    - '(.*\.)?nextjs\.org$'
+    - '(.*\.)?svelte\.dev$'
+    - '(.*\.)?tailwindcss\.com$'
+    - '(.*\.)?djangoproject\.com$'
+    - '(.*\.)?rubyonrails\.org$'
+    - '(.*\.)?spring\.io$'
+    # Dev platforms & learning
+    - '(.*\.)?dev\.to$'
+    - '(.*\.)?hashnode\.dev$'
+    - '(.*\.)?medium\.com$'
+    - '(.*\.)?freecodecamp\.org$'
+    - '(.*\.)?digitalocean\.com$'
+    - '(.*\.)?baeldung\.com$'
+    - '(.*\.)?geeksforgeeks\.org$'
+    - '(.*\.)?hackernoon\.com$'
+    - '(.*\.)?css-tricks\.com$'
+    - '(.*\.)?smashingmagazine\.com$'
+    # Cloud & DevOps docs
+    - '(.*\.)?docker\.com$'
+    - '(.*\.)?kubernetes\.io$'
+    - '(.*\.)?aws\.amazon\.com$'
+    - '(.*\.)?cloud\.google\.com$'
+    - '(.*\.)?vercel\.com$'
+    - '(.*\.)?netlify\.com$'
+    # Knowledge
+    - '(.*\.)?wikipedia\.org$'
+    - '(.*\.)?archlinux\.org$'
+  low_priority:
+    - '(.*\.)?pinterest\.com$'
+    - '(.*\.)?pinterest\.\w+$'
+    - '(.*\.)?tiktok\.com$'
+    - '(.*\.)?instagram\.com$'
+    - '(.*\.)?facebook\.com$'
+    - '(.*\.)?quora\.com$'
+    - '(.*\.)?w3schools\.com$'
+  remove:
+    - '(.*\.)?pinterest\.com$'
+    - '(.*\.)?pinterest\.\w+$'
+
 engines:
   - name: wolframalpha
     disabled: false
+  # Boost programming-relevant engines
+  - name: stackoverflow
+    weight: 3
+  - name: github
+    weight: 2
+  - name: duckduckgo
+    weight: 1.5
+  - name: google
+    weight: 1.5
+  - name: brave
+    weight: 1.5
+  - name: bing
+    weight: 1

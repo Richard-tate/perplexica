@@ -1,0 +1,127 @@
+sk-api-ZYYEdDZYN_HO5A1WD-5D7Fapaji5Rrpl_gth3_zwLOIKGp9uspjkWkVoTcPnrx9Z0wOVzaWxAlr4GL76hCDJLhz5W03dGboLQC6pQNsEokDQP9QnmEDk1C4
+
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.minimax.io/anthropic",
+    "ANTHROPIC_AUTH_TOKEN":"sk-cp-W6QrS70dzZPJePKYIIpUGeWbAxIj1fBvC01sBqv2Z3f9Ro3EF6NysGw8cUF330Il9UR08azva1I_g78OLq2r6_Ph6wZQxncxbEtzr4aLYN9DCSCRbpuXiWk",
+    "API_TIMEOUT_MS": "3000000",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": 1,
+    "ANTHROPIC_MODEL": "MiniMax-M2.5",
+    "ANTHROPIC_SMALL_FAST_MODEL": "MiniMax-M2.5",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "MiniMax-M2.5",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "MiniMax-M2.5",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "MiniMax-M2.5"
+  }
+
+
+
+
+
+  Explore(Trace search query flow)                                                                                                                     ⎿  Done (24 tool uses · 50.5k tokens · 1m 9s)                                                                                                      
+  (ctrl+o to expand)                                                                                                                                 
+                                                        
+● Here's the complete flow for your example query:                                                                                                        
+  Full Query Lifecycle                                                                                                                                                                                                                                                                                    
+  User: "Explain the Repository Pattern in Laravel..."                                                                                                                     ↓                                                                                                                                            POST /api/search                                                                                                                                             ↓                                                                                                                                        ┌───────────────────────┐                                                                                                                  
+          │   1. CLASSIFIER       │  LLM decides: skipSearch? which sources?
+          │   (generateObject)    │  → skipSearch: false, webSearch: true
+          │                       │  → standaloneFollowUp: reworded query
+          └───────────┬───────────┘
+                      ↓
+          ┌───────────────────────┐
+          │   2. RESEARCHER       │  Multi-turn tool call loop
+          │   (streamText+tools)  │  (max 2/6/25 iterations by mode)
+          └───────────┬───────────┘
+                      ↓
+
+  Step-by-Step: The Researcher Loop
+
+  Iteration 1 — The LLM receives the researcher prompt + available tools and decides what to do:
+
+  Messages sent to MiniMax:
+    system: "You are a research assistant. Available tools: web_search,
+             academic_search, social_search, scrape_url, done..."
+    user:   "Explain the Repository Pattern in Laravel. Include:
+             1. What problem it solves  2. How it differs from..."
+
+  MiniMax responds with tool calls (via Anthropic SDK format):
+
+  {
+    "tool_calls": [
+      {
+        "id": "tc_abc123",
+        "name": "web_search",
+        "arguments": {
+          "queries": [
+            "Repository Pattern Laravel what problem it solves",
+            "Laravel Repository Pattern vs Service Layer differences",
+            "Laravel Controller Service Repository Model code example"
+          ]
+        }
+      }
+    ]
+  }
+
+  Tool Execution — All 3 queries hit SearxNG in parallel:
+
+  searchSearxng("Repository Pattern Laravel what problem it solves")
+    → GET http://localhost:8080/search?format=json&q=Repository+Pattern+Laravel...
+    → returns { results: [{title, url, content}, ...], suggestions: [...] }
+
+  Results are converted to Chunk[] objects and fed back to the LLM:
+
+  Messages now:
+    system:    researcher prompt
+    user:      original query
+    assistant: { tool_calls: [{ id: "tc_abc123", name: "web_search", ... }] }
+    tool:      { id: "tc_abc123", content: '{"type":"search_results","results":[
+                  {"content":"The Repository Pattern abstracts data access...",
+                   "metadata":{"title":"...","url":"https://..."}}
+                ]}' }
+
+  Iteration 2 — MiniMax sees the search results and decides: enough info? or search more?
+
+  - If enough → calls done tool → loop exits
+  - If not → calls web_search again with refined queries, or scrape_url to read a specific article in depth
+
+  After the Loop: Answer Generation
+
+          ┌───────────────────────┐
+          │   3. WRITER           │  Separate LLM call (no tools)
+          │   (streamText)        │  Gets search results as XML context
+          └───────────┬───────────┘
+                      ↓
+                Streamed response
+
+  The Writer prompt wraps all search results as context:
+
+  <search_results>
+    <result index=1 title="Repository Pattern in Laravel">
+      The Repository Pattern abstracts data access...
+    </result>
+    <result index=2 title="Service Layer vs Repository">
+      While a Service Layer handles business logic...
+    </result>
+  </search_results>
+
+  The LLM then generates the final answer with [1], [2] citations, streamed back to the UI in real-time.
+
+  Key Points for MiniMax Integration
+
+  ┌────────────┬─────────────────────────┬────────────────────────────────────────┐
+  │    Step    │     LLM Method Used     │             Why It Matters             │
+  ├────────────┼─────────────────────────┼────────────────────────────────────────┤
+  │ Classifier │ generateObject()        │ Must return valid structured JSON      │
+  ├────────────┼─────────────────────────┼────────────────────────────────────────┤
+  │ Researcher │ streamText() with tools │ Must handle tool calls + IDs correctly │
+  ├────────────┼─────────────────────────┼────────────────────────────────────────┤
+  │ Writer     │ streamText() no tools   │ Basic streaming, straightforward       │
+  └────────────┴─────────────────────────┴────────────────────────────────────────┘
+
+  The Researcher step is the critical one — this is where multi-turn tool calling happens. The LLM must:
+  1. Decide which tools to call from the available set
+  2. Return properly formatted tool calls with valid IDs
+  3. Accept tool results back and reason about them
+  4. Know when to call done to stop
+
+  This is exactly why M2.5's 76.8% BFCL multi-turn score matters — the entire search quality depends on the LLM making good tool-calling decisions   
+  across multiple rounds.
