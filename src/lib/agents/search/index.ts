@@ -155,7 +155,11 @@ class SearchAgent {
         }
 
         block.data += chunk.contentChunk;
+        const before = block.data;
         block.data = sanitizeCodeBlocks(block.data);
+        if (before !== block.data) {
+          console.log('[CodeSanitizer] Fixed array syntax in response block');
+        }
 
         session.updateBlock(block.id, [
           {
