@@ -12,6 +12,7 @@ import { sanitizeCodeBlocks } from '@/lib/utils/codeSanitizer';
 
 class SearchAgent {
   async searchAsync(session: SessionManager, input: SearchAgentInput) {
+    console.log('[SearchAgent] searchAsync called — sanitizer build v2');
     const exists = await db.query.messages.findFirst({
       where: and(
         eq(messages.chatId, input.chatId),
